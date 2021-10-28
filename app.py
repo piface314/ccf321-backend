@@ -1,9 +1,11 @@
 from db import db
-from flask import Flask, jsonify, g
+from flask import Flask
 from flask_httpauth import HTTPBasicAuth
 from flask_restful import Api
 import resources as res
 import os
+from sys import argv
+
 
 app = Flask(__name__)
 key = os.urandom(12)
@@ -33,9 +35,20 @@ def login():
 def signup():
     return res.User.signup()
 
+@app.after_request
+def add_cors_headers_after(response):
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
+
 
 if __name__ == '__main__':
+    if len(argv) < 2:
+        print("Especifique o host da API")
+        exit(1)
     if not os.path.exists('db.sqlite'):
         with app.app_context():
             db.create_all()
-    app.run(host="192.168.1.7", debug=True)
+    app.run(host=argv[1])

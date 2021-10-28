@@ -68,7 +68,7 @@ class Note(Resource):
         note = m.Note.get(id, username)
         if note:
             try:
-                args = {k: v for k, v in request.json.items() if Note.k_args}
+                args = {k: v for k, v in request.json.items() if k in Note.k_args}
                 note.update(**args)
             except:
                 return {'message': "Um erro interno ocorreu ao tentar salvar sua anotação!"}, 500
